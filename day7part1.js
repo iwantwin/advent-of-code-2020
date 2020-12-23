@@ -24,7 +24,6 @@ inputLines.forEach(inputLine => {
         });
     }
 });
-console.log(bagDefinitions);
 
 const lookingForBagsThatCanContainBag = 'shiny gold';
 const bagsFound = [];
@@ -51,6 +50,5 @@ function checkBags() {
     }
 }
 
-debugger;
 checkBags();
-console.log( bagsFound );
+console.log( bagsFound.length );
