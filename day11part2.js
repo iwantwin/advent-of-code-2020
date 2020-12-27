@@ -19,20 +19,27 @@ function getSeatStatus(floorPlan, row, column) {
     }
 }
 
-function isOccupiedSeat(floorPlan, row, column) {
-    return getSeatStatus(floorPlan, row, column) === '#';
+function isOccupiedSeat(floorPlan, row, column, rowModifier, columnModifier) {
+    const checkingRow = row + rowModifier;
+    const checkingColumn = column + columnModifier;
+    const status = getSeatStatus(floorPlan, checkingRow, checkingColumn);
+    if( status === SeatStatus.Floor ) {
+        return isOccupiedSeat( floorPlan, checkingRow, checkingColumn, rowModifier, columnModifier );
+    } else {
+        return status === '#';
+    }
 }
 
 function getNrOccupiedAdjacentSeats(floorPlan, row, column) {
     return [
-        (/*leftTop*/ isOccupiedSeat(floorPlan, row - 1, column - 1) ? 1 : 0),
-        (/*top*/ isOccupiedSeat(floorPlan, row - 1, column) ? 1 : 0),
-        (/*rightTop*/ isOccupiedSeat(floorPlan, row - 1, column + 1) ? 1 : 0),
-        (/*left*/ isOccupiedSeat(floorPlan, row, column - 1) ? 1 : 0),
-        (/*right*/ isOccupiedSeat(floorPlan, row, column + 1) ? 1 : 0),
-        (/*leftBottom*/ isOccupiedSeat(floorPlan, row + 1, column - 1) ? 1 : 0),
-        (/*bottom*/ isOccupiedSeat(floorPlan, row + 1, column) ? 1 : 0),
-        (/*rightBottom*/ isOccupiedSeat(floorPlan, row + 1, column + 1) ? 1 : 0),
+        (/*leftTop*/ isOccupiedSeat(floorPlan, row, column, -1, -1) ? 1 : 0),
+        (/*top*/ isOccupiedSeat(floorPlan, row, column, -1, 0) ? 1 : 0),
+        (/*rightTop*/ isOccupiedSeat(floorPlan, row, column, -1, 1) ? 1 : 0),
+        (/*left*/ isOccupiedSeat(floorPlan, row, column, 0, -1) ? 1 : 0),
+        (/*right*/ isOccupiedSeat(floorPlan, row, column, 0, 1) ? 1 : 0),
+        (/*leftBottom*/ isOccupiedSeat(floorPlan, row, column, 1, -1) ? 1 : 0),
+        (/*bottom*/ isOccupiedSeat(floorPlan, row, column, 1, 0) ? 1 : 0),
+        (/*rightBottom*/ isOccupiedSeat(floorPlan, row, column, 1, 1) ? 1 : 0),
     ].reduce((acc, currentValue) => {
         return acc + currentValue;
     }, 0);
@@ -55,7 +62,7 @@ function applyRules(floorPlan, round) {
                 }
                 break;
             case SeatStatus.Occupied:
-                if (amountOccupiedSeatsAround >= 4) {
+                if (amountOccupiedSeatsAround >= 5) {
                     resultingFloorPlan[row][column] = SeatStatus.Empty;
                     didAnySeatChange = true;
                 }
